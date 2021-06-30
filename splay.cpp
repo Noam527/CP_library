@@ -95,6 +95,7 @@ struct splaytree {
 				v = cur, cur = T[cur][0];
 		}
 		if (!v) return splay(lst);
+		splay(lst); // important!! for amortization.
 		return splay(v);
 	}
 	// the actual value
