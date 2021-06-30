@@ -18,7 +18,7 @@ struct splaytree {
 	int root = 0; // will hold some root.
 	vector<node> T;
 	vector<int> free_nodes;
-	splaytree(int expected_max) {
+	splaytree(int expected_max = 0) {
 		T.reserve(expected_max + 1);
 		// initialize T[0] with null values:
 		T.push_back(node());
@@ -126,7 +126,7 @@ struct splaytree {
 		splay(v);
 		int u = lowerbound(val, v);
 		if (T[u].val < val) {
-			l = v, r = 0;
+			l = u, r = 0;
 			return;
 		}
 		r = u, l = T[u][0];
@@ -155,12 +155,14 @@ struct splaytree {
 	}
 
 	int insert(ll val) {
+		if (!root) return root = new_node(val);
 		int l, r, n = new_node(val);
 		split_value(root, l, r, val);
 		setchild(n, 0, l), setchild(n, 1, r);
 		return root = n;
 	}
 	int insert_at(ll val, int k) {
+		if (!root) return root = new_node(val);
 		int l, r, n = new_node(val);
 		split_size(root, l, r, k);
 		setchild(n, 0, l), setchild(n, 1, r);
