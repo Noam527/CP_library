@@ -125,6 +125,7 @@ struct linkcut {
 	}
 };
 
+/*
 void solve() {
 	linkcut T = linkcut(4);
 	while (1) {
@@ -164,3 +165,4 @@ void solve() {
 		}
 	}
 }
+*/
