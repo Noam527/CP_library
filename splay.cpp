@@ -1,3 +1,4 @@
+// https://codeforces.com/contest/1534/my
 struct splaytree {
 	// to be nonlazy, if efficiency is necessary, remove the definition of push() and uncomment the next line:
 	//#define push(X) ;
