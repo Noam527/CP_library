@@ -21,62 +21,92 @@ ll calculate(const vector<pair<int, int>> &aa) {
 	return res;
 }
 
-const int N = 10000, K = 100, L = 10;
-int dp[1 << L][L], from[1 << L][L];
+const int N = 100000, K = 300, L = 10;
 
-void reorder(vector<pair<int, int>> &a, int l, int r) {
-	int LL = r - l + 1;
-	if (LL > L) {
-		cout << "too long... " << l << " " << r << '\n';
-		return;
+struct query {
+	int l, r, i;
+	query(int _l = 0, int _r = 0, int _i = 0) {
+		l = _l;
+		r = _r;
+		i = _i;
 	}
-	for (int mask = 1; mask < (1 << LL); mask++) {
-		for (int j = 0; j < LL; j++) {
-			if (mask & (1 << j)) {
-				if (mask == (1 << j)) {
-					if (l == 0) dp[mask][j] = 0;
-					else dp[mask][j] = dist(a[l - 1], a[l + j]);
-					break;
+};
+
+struct moptimizer {
+	int dist(const query &a, const query &b) {
+		return abs(a.l - b.l) + abs(a.r - b.r);
+	}
+
+	vector<int> p, r;
+	vector<vector<int>> g;
+	vector<int> order;
+	int find(int x) {
+		return x == p[x] ? x : p[x] = find(p[x]);
+	}
+	bool unite(int x, int y) {
+		x = find(x), y = find(y);
+		if (x == y) return false;
+		if (r[x] < r[y]) p[x] = y;
+		else {
+			p[y] = x;
+			if (r[x] == r[y]) r[x]++;
+		}
+		return true;
+	}
+	void dfs(int v, int prev) {
+		order.push_back(v);
+		for (const auto &i : g[v])
+			if (i != prev)
+				dfs(i, v);
+	}
+
+	// https://github.com/kth-competitive-programming/kactl/blob/main/content/geometry/ManhattanMST.h
+	void manhattanMST(vector<query> ps) {
+		vector<int> id(ps.size());
+		for (int i = 0; i < id.size(); i++)
+			id[i] = i;
+		vector<pair<int, int>> edges;
+		for (int k = 0; k < 4; k++) {
+			sort(id.begin(), id.end(), [&](int i, int j) {
+				return ps[i].l - ps[j].l < ps[j].r - ps[i].r; });
+			map<int, int> sweep;
+			for (int i : id) {
+				for (auto it = sweep.lower_bound(-ps[i].r);
+					it != sweep.end(); sweep.erase(it++)) {
+					int j = it->second;
+					if (ps[i].r - ps[j].r > ps[i].l - ps[j].l) break;
+					edges.emplace_back(i, j);
 				}
-				dp[mask][j] = (int)1e9;
-				for (int k = 0; k < LL; k++) {
-					if (k != j && (mask & (1 << k)) != 0) {
-						if (dp[mask][j] > dp[mask ^ (1 << j)][k] + dist(a[l + j], a[l + k])) {
-							dp[mask][j] = dp[mask ^ (1 << j)][k] + dist(a[l + j], a[l + k]);
-							from[mask][j] = k;
-						}
-					}
-				}
+				sweep[-ps[i].r] = i;
+			}
+			for (query& p : ps) if (k & 1) p.l = -p.l; else swap(p.l, p.r);
+		}
+		sort(edges.begin(), edges.end(), [&](pair<int, int> &aa, pair<int, int> &bb) {
+			return dist(ps[aa.first], ps[aa.second]) < dist(ps[bb.first], ps[bb.second]);
+		});
+		for (auto &i : edges) {
+			if (unite(i.first, i.second)) {
+				g[i.first].push_back(i.second);
+				g[i.second].push_back(i.first);
 			}
 		}
 	}
-	int left = (1 << LL) - 1;
-	vector<int> order;
-	int best = (int)1e9, start = -1;
-	for (int i = 0; i < LL; i++) {
-		int cand = dp[left][i];
-		if (r + 1 < a.size())
-			cand += dist(a[l + i], a[r + 1]);
-		if (best > cand) {
-			best = cand;
-			start = i;
+	void optimize(vector<query> &Q) {
+		g.clear(), order.clear();
+		int n = Q.size();
+		p.resize(n), r.resize(n), g.resize(n);
+		for (int i = 0; i < n; i++) {
+			p[i] = i;
+			r[i] = 0;
 		}
+		manhattanMST(Q);
+		dfs(0, 0);
+		vector<query> result(n);
+		for (int i = 0; i < n; i++)
+			result[i] = Q[order[i]];
+		Q = result;
 	}
-	while (left) {
-		order.push_back(start);
-		int nxt = from[left][start];
-		left ^= (1 << start);
-		start = nxt;
-	}
-	// order is reversed though
-	vector<pair<int, int>> tmp(LL);
-	for (int i = 0; i < LL; i++) {
-		tmp[LL - 1 - i] = a[l + order[i]];
-	}
-	for (int i = 0; i < LL; i++) {
-		a[l + i] = tmp[i];
-	}
-}
+};
 
 vector<pair<int, int>> gen(int n, int q) {
 	set<pair<int, int>> S;
@@ -91,11 +121,17 @@ vector<pair<int, int>> gen(int n, int q) {
 	return res;
 }
 
-
-
 void solve() {
 	srand(time(NULL));
 	vector<pair<int, int>> a = gen(N, N);
+	vector<query> Q(N);
+	for (int i = 0; i < N; i++)
+		Q[i] = query(a[i].first, a[i].second, i);
+	moptimizer M;
+	M.optimize(Q);
+	for (int i = 0; i < N; i++)
+		a[i].first = Q[i].l, a[i].second = Q[i].r;
+	cout << "result: " << calculate(a) << '\n';
 	sort(a.begin(), a.end(), [&](const pair<int, int> &aa, const pair<int, int> &bb) {
 		if (aa.first / K != bb.first / K) return aa.first < bb.first;
 		if ((aa.first / K) & 1)
@@ -103,13 +139,6 @@ void solve() {
 		return aa.second > bb.second;
 	});
 	cout << "mo says: " << calculate(a) << '\n';
-	for (int i = 0; i < a.size(); i += L / 2) {
-		int l = i, r = min((int)a.size() - 1, i + L - 1);
-		if (l == r) break;
-		reorder(a, l, r);
-		if (i % 1000 == 0) cout << i << '\n';
-	}
-	cout << "result: " << calculate(a) << '\n';
 }
 
 int main() {
