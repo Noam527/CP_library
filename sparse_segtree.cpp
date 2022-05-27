@@ -6,7 +6,7 @@ also note the "using T = ll". this is the range of indicies we allow. can change
 */
 template<typename element>
 struct segtree {
-	using T = int;
+	using T = ll;
 	struct node {
 		element val;
 		T l, r;
