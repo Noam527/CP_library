@@ -6,7 +6,7 @@ also note the "using T = ll". this is the range of indicies we allow. can change
 */
 template<typename element>
 struct segtree {
-	using T = ll;
+	using T = int;
 	struct node {
 		element val;
 		T l, r;
@@ -68,8 +68,12 @@ struct segtree {
 		if (r < nl || nr < l) return element();
 		if (l <= nl && nr <= r) return t[node].val;
 		T mid = (nl + nr) / 2;
-		if (r <= mid) return query(l, r, go_left(node), nl, mid);
-		if (mid < l) return query(l, r, go_right(node), mid + 1, nr);
-		return query(l, r, go_left(node), nl, mid) * query(l, r, go_right(node), mid + 1, nr);
+		if (r <= mid || t[node].r == -1) {
+			if (t[node].l == -1) return element();
+			return query(l, r, go_left(node), nl, mid);
+		}
+		if (mid < l || t[node].l == -1)
+			return query(l, r, go_right(node), mid + 1, nr);
+		return query(l, r, t[node].l , nl, mid) * query(l, r, t[node].r, mid + 1, nr);
 	}
 };
