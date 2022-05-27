@@ -2,7 +2,9 @@
 the struct 'element' must have:
 * neutral element (as default constructor)
 * operator *, to combine with a right operand and return the result
-also note the "using T = ll". this is the range of indicies we allow. can change to int for efficiency.
+note the "using T = ll". this is the range of indicies we allow. can change to int for efficiency.
+note the static constant LIM. used for efficiency of both time and memory. practice shows that 64 or 128 are the best.
+this entire thing assumes commutativity (which is acceptable since the order of operations is weird in 2D).
 */
 template<typename element>
 struct segtree {
@@ -16,14 +18,20 @@ struct segtree {
 	};
 	T L, R;
 	vector<node> t;
-	// cache
+
+	// constant optimizations
+	static const int LIM = 64;
+	vector<pair<T, element>> last;
+	bool big;
 	T cache_i;
 	element cache_v;
+
 	segtree() {}
 	segtree(T LL, T RR) {
 		L = LL, R = RR;
 		t.push_back(node());
 		
+		big = 0;
 		cache_i = L;
 		cache_v = element();
 	}
@@ -54,9 +62,26 @@ struct segtree {
 		else t[v].val = t[t[v].l].val * t[t[v].r].val;
 	}
 	void update(T pos, element val) {
-		update(pos, val, 0, L, R);
 		cache_i = pos;
 		cache_v = val;
+		if (big) {
+			update(pos, val, 0, L, R);
+			return;
+		}
+		bool found = false;
+		for (auto &i : last) {
+			if (i.first == pos) {
+				i.second = val;
+				found = true;
+				break;
+			}
+		}
+		if (!found) last.emplace_back(pos, val);
+		if (last.size() < LIM) return;
+		for (const auto &i : last)
+			update(i.first, i.second, 0, L, R);
+		last.clear();
+		big = 1;
 	}
 	void update(T pos, element val, int node, T nl, T nr) {
 		if (nl == nr) {
@@ -70,6 +95,11 @@ struct segtree {
 	}
 	element get(T i) {
 		if (i == cache_i) return cache_v;
+		if (!big) {
+			for (const auto &j : last)
+				if (j.first == i) return j.second;
+			return element();
+		}
 		int node = 0;
 		T l = L, r = R;
 		while (l < r) {
@@ -89,6 +119,13 @@ struct segtree {
 	}
 	element query(T l, T r) {
 		if (l > r) return element();
+		if (!big) {
+			element res;
+			for (const auto &i : last)
+				if (l <= i.first && i.first <= r)
+					res = res * i.second;
+			return res;
+		}
 		return query(l, r, 0, L, R);
 	}
 	element query(T l, T r, int node, T nl, T nr) {
