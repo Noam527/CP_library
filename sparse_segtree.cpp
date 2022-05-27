@@ -70,10 +70,10 @@ struct segtree {
 		T mid = (nl + nr) / 2;
 		if (r <= mid || t[node].r == -1) {
 			if (t[node].l == -1) return element();
-			return query(l, r, go_left(node), nl, mid);
+			return query(l, r, t[node].l, nl, mid);
 		}
 		if (mid < l || t[node].l == -1)
-			return query(l, r, go_right(node), mid + 1, nr);
+			return query(l, r, t[node].r, mid + 1, nr);
 		return query(l, r, t[node].l , nl, mid) * query(l, r, t[node].r, mid + 1, nr);
 	}
 };
