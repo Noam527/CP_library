@@ -29,7 +29,7 @@ struct segtree {
 		}
 	}
 	// iterative, without assuming commutativity.
-	element iquery(int l, int r) {
+	element query(int l, int r) {
 		if (l > r) return element();
 		element L = element(), R = element();
 		for (l += n - 1, r += n - 1; l < r; l = (l - 1) / 2, r = (r - 1) / 2) {
