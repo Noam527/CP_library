@@ -4,14 +4,6 @@
 enum uid {
 	EDGE
 };
-struct edge {
-	int u, v;
-	edge() {}
-	edge(int uu, int vv) {
-		u = uu;
-		v = vv;
-	}
-};
 // unionize them here
 struct update {
 	uid id;
