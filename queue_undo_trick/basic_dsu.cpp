@@ -136,3 +136,4 @@ struct queuedsu : ds {
 		}
 	}
 };
+#undef ds
