@@ -1,3 +1,4 @@
+// https://codeforces.com/contest/1442/submission/240382290
 /* ---------- UPDATE TYPES ---------- */
 struct update {
 	int sz;
