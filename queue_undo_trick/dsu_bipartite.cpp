@@ -1,5 +1,60 @@
-// submitted at https://codeforces.com/contest/1386/submission/240375923
-/* ---------- UPDATE TYPES ---------- */
+// https://codeforces.com/contest/1386/submission/247538111
+
+/* -------------------- BASE CLASS -------------------- */
+
+template<typename upd_t>
+struct queue_undo_trick {
+	vector<bool> st;
+	vector<upd_t> tmp[2];
+	int nxt0;
+	queue_undo_trick() : nxt0(0) {}
+	void qupdate(const upd_t &u) {
+		st.push_back(1);
+		supdate(u);
+	}
+	void qundo() {
+		while (nxt0 < st.size() && st[nxt0]) nxt0++;
+		if (nxt0 == st.size()) {
+			// reverse. we assume st.size() > 0.
+			nxt0 = 0;
+			tmp[0].clear();
+			for (int i = 0; i < st.size(); i++) {
+				tmp[0].push_back(sundo());
+				st[i] = 0;
+			}
+			st.pop_back();
+			tmp[0].pop_back();
+			for (auto &u : tmp[0])
+				supdate(u);
+			return;
+		}
+		if (!st.back()) {
+			// A on top
+			st.pop_back();
+			sundo();
+			return;
+		}
+		// fix
+		tmp[0].clear(), tmp[1].clear();
+		do {
+			tmp[st.back()].push_back(sundo());
+			st.pop_back();
+		} while (nxt0 < st.size() && tmp[0].size() < tmp[1].size());
+		for (int i : {1, 0}) {
+			reverse(tmp[i].begin(), tmp[i].end());
+			if (i == 0) tmp[0].pop_back();
+			for (auto &u : tmp[i]) {
+				supdate(u);
+				st.push_back(i);
+			}
+		}
+	}
+	// to be implemented by inheriting class
+	virtual upd_t sundo() = 0;
+	virtual void supdate(const upd_t &u) = 0;
+};
+
+/* -------------------- UPDATE TYPES -------------------- */
 // declare all update types here
 enum uid {
 	EDGE
@@ -26,14 +81,14 @@ struct update {
 // declare constructors
 update make_edge(int u, int v) {
 	update x(EDGE);
-	x.id = EDGE;
 	x.data.e.u = u;
 	x.data.e.v = v;
 	return x;
 }
 
-/* ---------- UNDERLYING DS ---------- */
-struct dsu {
+/* -------------------- INHERITING CLASS -------------------- */
+
+struct queue_dsu : public queue_undo_trick<update> {
 	int n;
 	vector<int> p;
 	vector<int> up;
@@ -52,7 +107,7 @@ struct dsu {
 	};
 	vector<change> changes; // p[index] was value
 
-	dsu(int sz = 0) {
+	queue_dsu(int sz = 0) {
 		n = sz;
 		p.resize(n);
 		up.resize(n);
@@ -99,10 +154,10 @@ private:
 		}
 		return;
 	}
-public:
+
 	// update convention: push and switch case
-	// choose the return value
-	void upd(const update &u) {
+	// TODO: choose the return value
+	virtual void supdate(const update &u) {
 		changes.push_back(change());
 		updates.push_back(u);
 		switch (u.id) {
@@ -113,7 +168,7 @@ public:
 		exit(1);
 	}
 	// undo convention: return the update that was undone
-	update undo() {
+	virtual update sundo() {
 		if (changes.back().i != -1) {
 			p[changes.back().i] = changes.back().v1;
 			up[changes.back().i] = changes.back().v2;
@@ -128,58 +183,3 @@ public:
 		return tmp;
 	}
 };
-
-#define ds dsu
-struct queuedsu : ds {
-	vector<bool> st;
-	vector<update> tmp[2];
-	int nxtA;
-	queuedsu() : nxtA(0) {}
-	// imitate constructors
-	queuedsu(int sz) : ds(sz) {
-		nxtA = 0;
-	}
-	// choose return type
-	void upd(const update &u) {
-		st.push_back(1);
-		ds::upd(u);
-	}
-	void undo() {
-		while (nxtA < st.size() && st[nxtA]) nxtA++;
-		if (nxtA == st.size()) {
-			// reverse
-			nxtA = 0;
-			tmp[0].clear();
-			for (int i = 0; i < st.size(); i++) {
-				tmp[0].push_back(ds::undo());
-				st[i] = 0;
-			}
-			st.pop_back();
-			tmp[0].pop_back();
-			for (auto &u : tmp[0])
-				ds::upd(u);
-			return;
-		}
-		if (!st.back()) {
-			// A on top
-			st.pop_back();
-			ds::undo();
-			return;
-		}
-		// fix
-		tmp[0].clear(), tmp[1].clear();
-		do {
-			tmp[st.back()].push_back(ds::undo());
-			st.pop_back();
-		} while (nxtA < st.size() && tmp[0].size() < tmp[1].size());
-		for (int i : {1, 0}) {
-			reverse(tmp[i].begin(), tmp[i].end());
-			if (i == 0) tmp[0].pop_back();
-			for (auto &u : tmp[i]) {
-				ds::upd(u);
-				st.push_back(i);
-			}
-		}
-	}
-};
-#undef ds
