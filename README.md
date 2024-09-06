@@ -10,8 +10,8 @@ With this in mind, there must be criteria that all implementations must satisfy 
 - **Implementation specific details**: Surrounded by / are next to comments containing the letters `IMP`, or are described properly at the top of the file.
 - **Documentation**: Outside of the code file, some explanation required to understand it enough to allow entry into the code / understanding the idea. The sufficiency of the explanation is subjective to what I feel like is both concise and enough. This will be provided as a README file.
 
-## Documentation Format
 
+## Documentation Format
 Each entry will have a documentation file that gives sufficient and concise information regarding the problem being solved and the idea. This also has a format:
 
 - **Problem Statement**: The problem that is solved by this algorithm / data structure.
@@ -19,3 +19,9 @@ Each entry will have a documentation file that gives sufficient and concise info
 - **Core Ideas**: This is a subjective section - whichever explanation of the algorithm that feels the most natural, concise and convincing to me.
 - **Testing**: Mention if this was tested on some online judge / benchmarked, and its performence.
 - **Source**: If it's 3rd party or inspired by 3rd party, this will link to it.
+
+
+## Optionals
+Each entry can also have one of the following optional things:
+- Specific applications or implementations for specific common needs.
+- Extensions and usages of the data structure.
