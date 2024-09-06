@@ -17,7 +17,7 @@ Each entry will have a documentation file that gives sufficient and concise info
 - **Problem Statement**: The problem that is solved by this algorithm / data structure.
 - **Time and memory complexities**: Time and memory complexities. Amortization and high constant factors will also be mentioned.
 - **Core Ideas**: This is a subjective section - whichever explanation of the algorithm that feels the most natural, concise and convincing to me.
-- **Testing**: Mention if this was tested on some online judge / benchmarked, and its performence.
+- **Testing**: Mention if this was tested on some online judge / benchmarked.
 - **Source**: If it's 3rd party or inspired by 3rd party, this will link to it.
 
 
