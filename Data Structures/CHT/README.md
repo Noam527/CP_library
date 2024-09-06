@@ -2,7 +2,7 @@
 A data structure that handles insertions of linear functions `y = slope * x + constant`, and can answer the query: given `x`, find the linear function minimizing / maximizing evaluation at `x`.
 
 ### Complexity
-- **Time**: $O(log n)$
+- **Time**: $O(\log n)$
 - **Memory**: $O(n)$
 - **Amortized**
 
