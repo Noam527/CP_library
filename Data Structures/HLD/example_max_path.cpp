@@ -1,3 +1,22 @@
+// https://cses.fi/problemset/task/2134
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <time.h>
+#include <string>
+#include <map>
+#include <set>
+#include <cmath>
+typedef long long ll;
+typedef unsigned long long ull;
+typedef double ldb;
+const int OO = 0;
+const int md = (int)1e9 + 7; // (int)1e9 + 7, 998244353
+const ll inf = 2e18;
+using namespace std;
+ 
 /*
 This HLD implementation provides a re-indexing of tree vertices, so that every path can be represented as O(log n) ranges.
 In addition, every subtree can be represented as a single range.
@@ -61,17 +80,17 @@ struct HLD {
 			for (int i = 1; i < g[v].size(); i++)
 				dfs1(g[v][i], g[v][i], tim);
 		}
-		out[v] = tim - 1;
+		out[v] = tim;
 	}
 	
 	int segtree_index(int vertex) {
 		return in[vertex];
 	}
-
+ 
 	pair<int, int> subtree_range(int vertex) {
 		return { in[vertex], out[vertex] };
 	}
-
+ 
 	vector<pair<int, int>> upward_path_ranges(int lower, int upper) {
 		vector<pair<int, int>> result;
 		int pupper = par[upper];
@@ -93,7 +112,7 @@ struct HLD {
 				v = up[b][v];
 		return v;
 	}
-
+ 
 	int lca(int u, int v) {
 		if (dep[u] < dep[v]) swap(u, v);
 		u = jump(u, dep[u] - dep[v]);
@@ -118,3 +137,101 @@ struct HLD {
 		return left;
 	}
 };
+ 
+/*
+the struct 'element' must have:
+* neutral element (as default constructor)
+* operator *, to combine with a right operand and return the result
+*/
+template<typename element>
+struct segtree {
+	int n;
+	vector<element> t;
+	segtree() {}
+	segtree(int sz) {
+		n = max(2, sz);
+		t.resize(2 * n, element());
+	}
+	segtree(const vector<element>& a) {
+		n = max(2, (int)a.size());
+		t.resize(2 * n);
+		for (int i = 0; i < a.size(); i++)
+			t[i + n - 1] = a[i];
+		for (int i = n - 2; i >= 0; i--)
+			t[i] = t[2 * i + 1] * t[2 * i + 2];
+	}
+	void update(int pos, element val) {
+		pos += n - 1;
+		t[pos] = val;
+		while (pos) {
+			pos = (pos - 1) / 2;
+			t[pos] = t[2 * pos + 1] * t[2 * pos + 2];
+		}
+	}
+	// iterative, without assuming commutativity.
+	element query(int l, int r) {
+		if (l > r) return element();
+		element L = element(), R = element();
+		for (l += n - 1, r += n - 1; l < r; l = (l - 1) / 2, r = (r - 1) / 2) {
+			if (!(l & 1)) L = L * t[l++];
+			if (r & 1) R = t[r--] * R;
+		}
+		if (l == r) L = L * t[l];
+		return L * R;
+	}
+};
+ 
+struct element {
+	int x;
+	element(int xx = -md) : x(xx) {}
+	element operator * (const element& other) const {
+		return element(max(x, other.x));
+	}
+};
+ 
+int n, q;
+vector<int> val;
+vector<vector<int>> g;
+HLD hld;
+segtree<element> T;
+ 
+void solve() {
+	cin >> n >> q;
+	val.resize(n);
+	for (auto& i : val) cin >> i;
+	g.resize(n);
+	for (int i = 0, u, v; i < n - 1; i++) {
+		cin >> u >> v;
+		--u, --v;
+		g[u].push_back(v);
+		g[v].push_back(u);
+	}
+	hld = HLD(g, true);
+	T = segtree<element>(n);
+	for (int i = 0; i < n; i++)
+		T.update(hld.segtree_index(i), val[i]);
+	while (q--) {
+		int type, x, y;
+		cin >> type >> x >> y;
+		if (type == 1) {
+			--x;
+			T.update(hld.segtree_index(x), element(y));
+		}
+		else {
+			--x, --y;
+			auto ranges = hld.path_ranges(x, y);
+			int ans = -md;
+			for (auto& range : ranges) {
+				ans = max(ans, T.query(range.first, range.second).x);
+			}
+			cout << ans << '\n';
+		}
+	}
+}
+ 
+int main() {
+	ios::sync_with_stdio(0), cin.tie(0);
+	int tests = 1;
+	//cin >> tests;
+	while (tests--) solve();
+}
