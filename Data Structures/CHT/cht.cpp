@@ -1,20 +1,3 @@
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <algorithm>
-#include <time.h>
-#include <string>
-#include <map>
-#include <set>
-#include <cmath>
-typedef long long ll;
-typedef unsigned long long ull;
-typedef double ldb;
-const int OO = 0;
-const int md = (int)1e9 + 7; // (int)1e9 + 7, 998244353
-const ll inf = 2e18;
-using namespace std;
-
 /*
 For efficiency, there are multiple template variables:
 - type: Use 1 for maximum CHT, or -1 for minimum CHT.
@@ -98,32 +81,3 @@ struct CHT {
 		return hull.lower_bound(line(0, 0, true, 0, db_t(x)))->id;
 	}
 };
-
-int n;
-vector<int> a, b;
-
-void solve() {
-	cin >> n;
-	a.resize(n);
-	b.resize(n);
-	for (auto& i : a) cin >> i;
-	for (auto& i : b) cin >> i;
-	if (n == 1) {
-		cout << "0\n";
-		return;
-	}
-	CHT<-1, int> hull;
-	hull.insert(b[0], 0LL);
-	for (int i = 1; i < n - 1; i++) {
-		ll mn = hull.query(a[i]);
-		hull.insert(b[i], mn);
-	}
-	cout << hull.query(a[n - 1]) << '\n';
-}
-
-int main() {
-	ios::sync_with_stdio(0), cin.tie(0);
-	int tests = 1;
-	//cin >> tests;
-	while (tests--) solve();
-}
