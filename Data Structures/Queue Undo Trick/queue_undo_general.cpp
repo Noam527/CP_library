@@ -1,3 +1,5 @@
+// This snippet of code is ready to be copied. Change all IMP's.
+
 /* -------------------- BASE CLASS -------------------- */
 
 template<typename upd_t>
@@ -52,39 +54,76 @@ struct queue_undo_trick {
 	virtual void supdate(const upd_t &u) = 0;
 };
 
-/* -------------------- UPDATE TYPE -------------------- */
-// TODO: struct update with usual constructors
-struct update {};
+/* -------------------- UPDATE TYPES -------------------- */
+// declare all update types here
+enum uid {
+	// IMP all types enums, like EDGE
+};
+// unionize them here
+struct update {
+	uid id;
+	update(uid ID) {
+		id = ID;
+	}
+	union data {
+		/*	IMP
+			all update structs, like struct edge, with usual constructors
+			end the struct definition with declaration:
+			struct edge{
+				// ...
+			} e;
+		*/
+		data() {}
+		~data() {}
+	} data;
+};
+// IMP: declare constructors for update types. for example:
+/*
+update make_edge(int u, int v) {
+	update x(EDGE);
+	x.data.e.u = u;
+	x.data.e.v = v;
+	return x;
+}
+*/
+
 /* -------------------- INHERITING CLASS -------------------- */
-// TODO: choose class name
+
+// IMP: choose class name
 struct your_queue_ds : public queue_undo_trick<update> {
 	/*
-	TODO
+	IMP
 	normal variables
 	*/
 	// stack memory
 	vector<update> updates;
 	/*
-	TODO
+	IMP
 	tailored implementation of changes, usually elementary data types / struct change, along with vector<change>
 	*/
 
-	// TODO: constructors
-	// TODO: queries
+	// IMP: constructors
+	// IMP: queries
 private:
-	// TODO: updates, choose return types. In private so that the user doesn't call it on accident.
+	// IMP: updates, choose return types. In private so that the user doesn't call it on accident.
 
 	// update convention: push and switch case
-	// TODO: choose the return value
+	// IMP: choose the return value
 	virtual void supdate(const update &u) {
-		// TODO: push_back change here
+		// IMP: push_back change here
 		updates.push_back(u);
-		// TODO: call the actual update function (or just do it here)
+		switch (u.id) {
+			/*
+			IMP
+			case for each update type
+			*/
+		}
+		exit(1);
 	}
 	// undo convention: return the update that was undone
 	virtual update sundo() {
-		// TODO: roll back from changes
-		// TODO: pop_back last change
+		// IMP: roll back from changes
+		// IMP: pop_back last change
 		update tmp = move(updates.back());
 		updates.pop_back();
 		return tmp;
