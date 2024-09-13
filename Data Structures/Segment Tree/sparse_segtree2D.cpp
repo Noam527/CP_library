@@ -130,47 +130,41 @@ struct segtree2D {
 	using T = int;
 	struct node {
 		segtree<element> val;
-		int l, r;
+		int c[2];
 		node() {}
-		node(T L, T R) {
-			l = -1, r = -1;
-			val = segtree<element>(L, R);
+		node(T L, T R) : c({0, 0}), val(L, R) {}
+		int& operator [](int i) {
+			return c[i];
 		}
 	};
 	T L0, R0, L1, R1;
 	vector<node> t;
 	segtree2D() {}
 	segtree2D(T l0, T r0, T l1, T r1) : L0(l0), R0(r0), L1(l1), R1(r1) {
-		t.push_back(node(L1, R1));
+		t.push_back(node()); // dummy
+		t.push_back(node(L1, R1)); // root
 	}
 	int add_node() {
 		t.push_back(node(L1, R1));
 		return (int)t.size() - 1;
 	}
-	int go_left(int v) {
-		if (t[v].l == -1) {
+	int go(int v, int dir) {
+		if (!t[v][dir]) {
 			int x = add_node(); // prevents bug from reallocation
-			t[v].l = x;
+			t[v][dir] = x;
 		}
-		return t[v].l;
-	}
-	int go_right(int v) {
-		if (t[v].r == -1) {
-			int x = add_node(); // prevents bug from reallocation
-			t[v].r = x;
-		}
-		return t[v].r;
+		return t[v][dir];
 	}
 	void fix(int node, T pos1) {
 		// assumes node has at least 1 child
 		element val;
-		if (t[node].l == -1) val = t[t[node].r].val.get(pos1);
-		else if (t[node].r == -1) val = t[t[node].l].val.get(pos1);
-		else val = t[t[node].l].val.get(pos1) * t[t[node].r].val.get(pos1);
+		if (!t[node][0]) val = t[t[node][1]].val.get(pos1);
+		else if (!t[node][1]) val = t[t[node][0]].val.get(pos1);
+		else val = t[t[node][0]].val.get(pos1) * t[t[node][1]].val.get(pos1);
 		t[node].val.update(pos1, val);
 	}
 	void update(T pos0, T pos1, element val) {
-		update(pos0, pos1, val, 0, L0, R0);
+		update(pos0, pos1, val, 1, L0, R0);
 	}
 	void update(T pos0, T pos1, element val, int node, T nl, T nr) {
 		if (nl == nr) {
@@ -178,13 +172,13 @@ struct segtree2D {
 			return;
 		}
 		T mid = (nl + nr) / 2;
-		if (pos0 <= mid) update(pos0, pos1, val, go_left(node), nl, mid);
-		else update(pos0, pos1, val, go_right(node), mid + 1, nr);
+		if (pos0 <= mid) update(pos0, pos1, val, go(node, 0), nl, mid);
+		else update(pos0, pos1, val, go(node, 1), mid + 1, nr);
 		fix(node, pos1);
 	}
 	element query(T l0, T r0, T l1, T r1) {
 		if (l0 > r0 || l1 > r1) return element();
-		return query(l0, r0, l1, r1, 0, L0, R0);
+		return query(l0, r0, l1, r1, 1, L0, R0);
 	}
 	element query(T l0, T r0, T l1, T r1, int node, T nl, T nr) {
 		if (r0 < nl || nr < l0) return element();
@@ -192,12 +186,12 @@ struct segtree2D {
 			return t[node].val.query(l1, r1);
 		}
 		T mid = (nl + nr) / 2;
-		if (r0 <= mid || t[node].r == -1) {
-			if (t[node].l == -1) return element();
-			return query(l0, r0, l1, r1, t[node].l, nl, mid);
+		if (r0 <= mid || !t[node][1]) {
+			if (!t[node][0]) return element();
+			return query(l0, r0, l1, r1, t[node][0], nl, mid);
 		}
-		if (mid < l0 || t[node].l == -1)
-			return query(l0, r0, l1, r1, t[node].r, mid + 1, nr);
-		return query(l0, r0, l1, r1, t[node].l, nl, mid) * query(l0, r0, l1, r1, t[node].r, mid + 1, nr);
+		if (mid < l0 || !t[node][0])
+			return query(l0, r0, l1, r1, t[node][1], mid + 1, nr);
+		return query(l0, r0, l1, r1, t[node][0], nl, mid) * query(l0, r0, l1, r1, t[node][1], mid + 1, nr);
 	}
 };
