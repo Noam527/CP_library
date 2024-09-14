@@ -62,21 +62,21 @@ struct Treap {
 	// IMP: if needed, operations by indicies
 	// split to l, r so that left size is `size`.
 	void split_size(int n, int& l, int& r, int size) {
-        if (!n || !size) {
-            l = 0, r = n;
-            return;
-        }
-        push(n);
-        if (left(n).size >= size) {
-            split_size(t[n].l, l, r, size);
-            t[n].l = r, r = n;
-        }
-        else {
-            split_size(t[n].r, l, r, size - 1 - left(n).size);
-            t[n].r = l, l = n;
-        }
-        fix(n);
-    }
+		if (!n || !size) {
+			l = 0, r = n;
+			return;
+		}
+		push(n);
+		if (left(n).size >= size) {
+			split_size(t[n].l, l, r, size);
+			t[n].l = r, r = n;
+		}
+		else {
+			split_size(t[n].r, l, r, size - 1 - left(n).size);
+			t[n].r = l, l = n;
+		}
+		fix(n);
+	}
 	void insert_at(int index, ll val) {
 		int n = add_node(val), l, r;
 		split_size(root, l, r, index);
@@ -92,12 +92,12 @@ struct Treap {
 		push(n);
 		if (t[n].val >= val) {
 			split(t[n].l, l, r, val);
-            t[n].l = r, r = n;
-        }
+			t[n].l = r, r = n;
+		}
 		else {
 			split(t[n].r, l, r, val);
-            t[n].r = l, l = n;
-        }
+			t[n].r = l, l = n;
+		}
 		fix(n);
 	}
 	void insert(ll val) {
