@@ -60,7 +60,7 @@ struct Treap {
 		return r;
 	}
 	// IMP: if needed, operations by indicies
-	// split to l, r so that left size is `size`
+	// split to l, r so that left size is `size`.
 	void split_size(int n, int& l, int& r, int size) {
         if (!n || !size) {
             l = 0, r = n;
