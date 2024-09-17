@@ -12,6 +12,7 @@ In terms of implementation, you must create the underlying data structure and su
 
 ### Tests and Benchmarks
 - DSU: https://codeforces.com/contest/1386/submission/247538111
+- Notebook version: https://codeforces.com/contest/1386/submission/281644644
 
 ### Source / Credit
 Own. Blogpost: https://codeforces.com/blog/entry/83467
