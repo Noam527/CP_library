@@ -16,13 +16,13 @@ Usual gaussian elimination. In terms of implementation, `gaussian` returns the d
 Everything is inplace! (the matrix is destroyed, copy beforehand if you need).
 
 ### Tests and Benchmarks
-In $\doubleF_998244353$:
+In $\mathbb{F}_998244353$:
 - Determinant (basically calling `gaussian`): https://judge.yosupo.jp/submission/236890
 - Inverse: https://judge.yosupo.jp/submission/236891
 - Rank: https://judge.yosupo.jp/submission/236878
 - Solving a linear system of equations, *all solution space*: https://judge.yosupo.jp/submission/236893
 
-In $\doubleR$, only did manual tests.
+In $\mathbb{R}$, only did manual tests.
 
 ### Source / Credit
 Own
