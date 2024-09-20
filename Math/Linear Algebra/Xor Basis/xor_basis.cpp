@@ -1,13 +1,11 @@
 struct xor_basis {
 	vector<ll> b; // kept in decreasing order
 	ll min_xor(ll x) { // MUST
-		for (auto& i : b)
-			if ((x ^ i) < x) x ^= i;
+		for (auto& i : b) x = min(x ^ i, x);
 		return x;
 	}
 	ll max_xor(ll x) { // OPTIONAL
-		for (auto& i : b)
-			if ((x ^ i) > x) x ^= i;
+		for (auto& i : b) x = max(x ^ i, x);
 		return x;
 	}
 	void add(ll x) {
