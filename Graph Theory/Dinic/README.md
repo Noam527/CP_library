@@ -11,8 +11,11 @@ In unit capacity graphs, $O(E \sqrt E)$ since there are $O(\sqrt E)$ phases of b
 In graphs where each vertex allows at most one path, $O(E \sqrt V)$, since there are $O(\sqrt V)$ phases of blocking flow.
 
 ### Tests and Benchmarks
+My implementation:
 - Maximum flow: https://www.spoj.com/status/FASTFLOW,noam527/
 - Maximum matching: https://www.spoj.com/status/MATCHING,noam527/
 
+KACTL's implementation: I used it in bipartite matching.
+
 ### Source / Credit
-Inspired by https://github.com/kth-competitive-programming/kactl/blob/main/content/graph/Dinic.h, but rewritten to my style.
+https://github.com/kth-competitive-programming/kactl/blob/main/content/graph/Dinic.h, but also rewritten to my style.
