@@ -105,4 +105,16 @@ struct Treap {
 		split(root, l, r, val);
 		root = merge(merge(l, n), r);
 	}
+	// EXAMPLE: query on inclusive range of indicies [l, r]
+	void subarray(int l, int r, int &nl, int &nmid, int &nr) {
+		split_size(root, nl, nr, r + 1);
+		split_size(nl, nl, nmid, l);
+	}
+	ll min_range(int l, int r) {
+		int nl, nmid, nr;
+		subarray(l, r, nl, nmid, nr);
+		ll ans = t[nmid].mn;
+		root = merge(merge(nl, nmid), nr);
+		return ans;
+	}
 };
