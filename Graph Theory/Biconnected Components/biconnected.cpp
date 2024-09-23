@@ -1,3 +1,4 @@
+// Notice the IMP comments! Choose which type to compute.
 struct biconnected {
 	int n, b;
 	vector<vector<int>> g, ans;
