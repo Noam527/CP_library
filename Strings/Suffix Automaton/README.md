@@ -29,7 +29,7 @@ Finally, here are some nice properties helpful to problemsolving:
 - A string $x$ is a substring of $S$ iff there exists a path for $x$. We can use this to count distinct substrings as the number of paths in the DAG.
 - The accepting states of the automaton can be found by looking at the node of the entire string, and its path to root in the suffix link chain.
 - To find the lexicographically minimum suffix, simply jump on the smallest edges until an accepting state is reached. The $k$-th lexicographically minimal suffix / substring can also be found in a similar manner.
-- To count the number of occurrences of a substring, we need to compute $|I(x)|$ for every node. Observe that this value is 1 exactly for the leaves in the suffix links tree, and otherwise it is the number of leaves in the subtree (subtree sum), which can be computed in dfs. You can find these leaves by looking at the links.
+- To count the number of occurrences of a substring, we need to compute $|I(x)|$ for every node. Observe that it is exactly 1 for the nodes created not be cloning, and otherwise, if we look at the suffix links tree, then it is the number of such nodes in the subtree. So we can set it to `1` for all non-cloned nodes, and then iterate on nodes in decreasing order of length and do `count[link[v]] += count[v]`.
 
 ### Tests and Benchmarks
 - Longest common substring: https://judge.yosupo.jp/submission/237849
