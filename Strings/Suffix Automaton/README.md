@@ -32,7 +32,12 @@ Finally, here are some nice properties helpful to problemsolving:
 - To count the number of occurrences of a substring, we need to compute $|I(x)|$ for every node. Observe that this value is 1 exactly for the leaves in the suffix links tree, and otherwise it is the number of leaves in the subtree (subtree sum), which can be computed in dfs. You can find these leaves by looking at the links.
 
 ### Tests and Benchmarks
-- CSES counting distinct substrings: https://cses.fi/problemset/result/10440154/
+- Longest common substring: https://judge.yosupo.jp/submission/237849
+- Number of distinct substrings: https://judge.yosupo.jp/submission/237848
+- Minimal cyclic shift: https://cses.fi/problemset/result/10615012/
+- Find if pattern exists: https://cses.fi/problemset/result/10615040/
+- Count pattern occurrences: https://cses.fi/problemset/result/10615158/
+- Find first pattern occurrence: https://cses.fi/problemset/result/10615165/
 
 ### Source / Credit
 - Read up on: https://cp-algorithms.com/string/suffix-automaton.html

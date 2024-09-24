@@ -1,3 +1,4 @@
+// NOTE: not up to date with the constant alphabet one.
 struct suffix_automaton {
 	struct node {
 		int len, link;
