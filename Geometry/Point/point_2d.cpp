@@ -1,4 +1,9 @@
+typedef long double ldb;
+const ldb EPS = 1e-10;
+const ldb PI = atan2l(0, -1);
 template <class T> int sgn(T x) { return (x > 0) - (x < 0); }
+template <class T> int epssgn(T x) { return (x > EPS) - (x < -EPS); }
+
 template<class T>
 struct Point {
 	typedef Point P;
