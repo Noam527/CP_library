@@ -23,7 +23,7 @@ To support values on edges, you can set the node values to be the values on the 
 ### Tests and Benchmarks
 - Distinct values in range: https://cses.fi/problemset/result/10500267/
 - Distinct vertex values on path (last submission): https://www.spoj.com/status/COT2,noam527/
-- Mex of edge values on path: https://codeforces.com/gym/100962/my
+- Mex of edge values on path: https://codeforces.com/gym/100962/submission/284976436
 
 ### Source / Credit
 Own.
