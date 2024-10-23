@@ -13,7 +13,8 @@ To store a signed integer, I imitate how regular integers work:
 - Division and modulo are signed.
 
 ### Tests and Benchmarks
-- For local tests see the files beginning with `test`.
+- For local tests see the files beginning with `test`
+- Exact geometry (is halfplane intersection nonempty) in integers: https://codeforces.com/gym/104875/submission/287583763
 
 ### Source / Credit
 Own.
