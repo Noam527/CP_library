@@ -37,5 +37,4 @@ struct trie {
 		}
 		return res;
 	}
-	T max_xor(T v) { return ((1LL << v) - 1) ^ min_xor(v); }
 };
