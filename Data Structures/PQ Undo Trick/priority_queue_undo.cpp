@@ -1,3 +1,4 @@
+// Priorities must be unique! If needed, use pairs as priority
 template<typename upd_t, typename pr_t>
 struct pq_undo_trick {
 	map<pr_t, int> m;
