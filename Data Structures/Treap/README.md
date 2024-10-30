@@ -16,6 +16,7 @@ The only downside is that it is recursive.
 
 ### Tests and Benchmarks
 - Range flip updates, range sum queries: https://judge.yosupo.jp/submission/235609
+- Same problem, after fix: https://judge.yosupo.jp/submission/245864
 
 ### Source / Credit
 Own
