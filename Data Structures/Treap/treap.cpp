@@ -29,6 +29,7 @@ struct treap {
 	void push(int n) {
 		if (!n) return; // dummy no-op
 		// IMP: apply lazy tag. leave empty if treap is not lazy
+		// NOTE: for constant factor, ignore default tag!
 		t[n].val += t[n].add, t[n].mn += t[n].add;
 		left(n).add += t[n].add;
 		right(n).add += t[n].add;
