@@ -17,7 +17,7 @@ The only downside is that it is recursive.
 ### Tests and Benchmarks
 - Range flip updates, range sum queries: https://judge.yosupo.jp/submission/235609
 - Same problem, after fix: https://judge.yosupo.jp/submission/245864
-- Dynamic array (insert and erase), with range reverse & affine updates, and range sum queries: https://judge.yosupo.jp/submission/246281
+- Dynamic array (insert and erase), with range reverse & affine updates, and range sum queries: https://judge.yosupo.jp/submission/246286
 
 ### Source / Credit
 Own
