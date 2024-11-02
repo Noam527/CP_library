@@ -16,6 +16,7 @@ In dijkstra, implement the `<` operator of `edge` in reverse order to use with p
 ### Tests and Benchmarks
 - Dijkstra with path construction: https://judge.yosupo.jp/submission/237020
 - Bellman ford with checking if there exists negative cycle on path: https://cses.fi/problemset/result/10581727/
+- SPFA with negative cycle detection on path: https://cses.fi/problemset/result/10964811/
 - Floyd warshall: https://cses.fi/problemset/result/10581814/
 
 ### Source / Credit

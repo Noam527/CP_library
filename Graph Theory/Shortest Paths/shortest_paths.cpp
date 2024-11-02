@@ -21,6 +21,29 @@ void bellmanford(int n, const vector<edge>& e, int src, vector<int>& prev, vecto
 		if (dist[i.from] == -inf)
 			dist[i.to] = -inf;
 }
+// dist[v] == inf if no path, dist[v] == -inf if there exists a negative cycle on the path
+void spfa(vector<vector<edge>> &g, int src, vector<int>& prev, vector<ll>& dist) {
+	int n = g.size();
+	dist.assign(n, inf);
+	prev.assign(n, -1);
+	vector<int> inq(n), cnt(n);
+	dist[src] = 0, inq[src] = 1;
+	queue<int> q; q.push(src);
+	while (q.size()) {
+		int x = q.front();
+		q.pop(), inq[x] = 0;
+		if (++cnt[x] > n) dist[x] = -inf;
+		for (auto& i : g[x]) {
+			if (cnt[i.to] > n) continue;
+			if (dist[i.to] > dist[x] + i.w) {
+				if (dist[x] == -inf) dist[i.to] = -inf;
+				else dist[i.to] = dist[x] + i.w;
+				prev[i.to] = x;
+				if (!inq[i.to]) q.push(i.to);
+			}
+		}
+	}
+}
 void dijkstra(const vector<vector<edge>>& g, int src, vector<int>& prev, vector<ll>& dist) {
 	int n = g.size();
 	dist.assign(n, inf);
