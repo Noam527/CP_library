@@ -39,7 +39,7 @@ void spfa(vector<vector<edge>> &g, int src, vector<int>& prev, vector<ll>& dist)
 				if (dist[x] == -inf) dist[i.to] = -inf;
 				else dist[i.to] = dist[x] + i.w;
 				prev[i.to] = x;
-				if (!inq[i.to]) q.push(i.to);
+				if (!inq[i.to]) inq[i.to] = 1, q.push(i.to);
 			}
 		}
 	}
