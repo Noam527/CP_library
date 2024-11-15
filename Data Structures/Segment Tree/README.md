@@ -16,5 +16,10 @@ Also has memory and time optimizations in the 2D versions.
   - As is, forced sparsity (multiplied indicies by 777): https://judge.yosupo.jp/submission/237380
   - Without (2D)optimizations and `get`: https://judge.yosupo.jp/submission/237384
 
+- Multidimensional sparse:
+  - As is, forced sparsity (multiplied indicies by 777): https://judge.yosupo.jp/submission/249811
+  - With 1D optimization, IOI13 Game: https://oj.uz/submission/1113071
+  - SWERC21 (not necessary, but good benchmark): https://codeforces.com/contest/1662/submission/291669531
+
 ### Source / Credit
 Own
