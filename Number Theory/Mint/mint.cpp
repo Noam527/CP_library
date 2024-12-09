@@ -9,7 +9,6 @@ struct Mint {
 			x = y % MOD + MOD;
 			if (x >= MOD) x -= MOD;
 		}
-		else x = (y % MOD + MOD) % MOD;
 	}
 	Mint operator + (Mint a) { return Mint(x + a.x); }
 	Mint operator - (Mint a) { return Mint(x - a.x); }
@@ -26,6 +25,9 @@ struct Mint {
 	Mint operator / (Mint a) { return *this * a.inv(); }
 	bool operator == (Mint a) { return x == a.x; }
 	bool operator != (Mint a) { return x != a.x; }
+	friend ostream& operator<<(ostream& os, Mint n) {
+		return os << n.x;
+	}
 };
 using mint_t = Mint<md>;
 const int FLIM = 500005; // IMP: choose properly
