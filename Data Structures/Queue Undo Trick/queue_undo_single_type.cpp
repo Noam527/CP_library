@@ -1,38 +1,31 @@
 /* -------------------- BASE CLASS -------------------- */
 
-template<typename upd_t>
+template<typename update>
 struct queue_undo_trick {
-	vector<bool> st;
-	vector<upd_t> tmp[2];
+	vector<int> st;
+	vector<update> tmp[2];
 	int nxt0;
 	queue_undo_trick() : nxt0(0) {}
-	void qupdate(const upd_t &u) {
-		st.push_back(1);
-		supdate(u);
+	void qupdate(const update &u) {
+		st.push_back(1), supdate(u);
 	}
 	void qundo() {
 		while (nxt0 < st.size() && st[nxt0]) nxt0++;
 		if (nxt0 == st.size()) {
-			// reverse. we assume st.size() > 0.
 			nxt0 = 0;
 			tmp[0].clear();
-			for (int i = 0; i < st.size(); i++) {
-				tmp[0].push_back(sundo());
-				st[i] = 0;
-			}
-			st.pop_back();
-			tmp[0].pop_back();
+			for (auto &i : st)
+				tmp[0].push_back(sundo()), i = 0;
+			st.pop_back(), tmp[0].pop_back();
 			for (auto &u : tmp[0])
 				supdate(u);
 			return;
 		}
 		if (!st.back()) {
-			// A on top
 			st.pop_back();
 			sundo();
 			return;
 		}
-		// fix
 		tmp[0].clear(), tmp[1].clear();
 		do {
 			tmp[st.back()].push_back(sundo());
@@ -41,50 +34,27 @@ struct queue_undo_trick {
 		for (int i : {1, 0}) {
 			reverse(tmp[i].begin(), tmp[i].end());
 			if (i == 0) tmp[0].pop_back();
-			for (auto &u : tmp[i]) {
-				supdate(u);
-				st.push_back(i);
-			}
+			for (auto &u : tmp[i])
+				supdate(u), st.push_back(i);
 		}
 	}
-	// to be implemented by inheriting class
-	virtual upd_t sundo() = 0;
-	virtual void supdate(const upd_t &u) = 0;
+	virtual update sundo() = 0;
+	virtual void supdate(const update &u) = 0;
 };
 
-/* -------------------- UPDATE TYPE -------------------- */
-// IMP: struct update with usual constructors
+// IMP: struct uniting all types of updates
 struct update {};
-/* -------------------- INHERITING CLASS -------------------- */
-// IMP: choose class name
-struct your_queue_ds : public queue_undo_trick<update> {
-	/*
-	IMP
-	normal variables
-	*/
-	// stack memory
-	vector<update> updates;
-	/*
-	IMP
-	tailored implementation of changes, usually elementary data types / struct change, along with vector<change>
-	*/
-
-	// IMP: constructors
-	// IMP: queries
+struct your_ds : public queue_undo_trick<update> {
+	// IMP: data structure members, constructors, queries
+	// IMP: keeping track of changes for stack undo, for example: vector of (index, prev_value)
+	vector<update> updates; // memorize all updates
 private:
-	// IMP: updates, choose return types. In private so that the user doesn't call it on accident.
-
-	// update convention: push and switch case
-	// IMP: choose the return value
 	virtual void supdate(const update &u) {
-		// IMP: push_back change here
 		updates.push_back(u);
-		// IMP: call the actual update function (or just do it here)
+		// IMP: perform the update and keep track of changes
 	}
-	// undo convention: return the update that was undone
 	virtual update sundo() {
-		// IMP: roll back from changes
-		// IMP: pop_back last change
+		// IMP: roll back last change and pop it
 		update tmp = move(updates.back());
 		updates.pop_back();
 		return tmp;
