@@ -1,10 +1,14 @@
+const int md = 998244353;
 // Assumes prime modulo at most 2^30.
 template<int MOD>
 struct Mint {
 	int x;
-	Mint(int y = 0) {
+	Mint(ll y = 0) {
 		if (0 <= y && y < MOD) x = y;
-		else x = (y % MOD + MOD) % MOD;
+		else {
+			x = y % MOD + MOD;
+			if (x >= MOD) x -= MOD;
+		}
 	}
 	Mint operator + (Mint a) { return Mint(x + a.x); }
 	Mint operator - (Mint a) { return Mint(x - a.x); }
@@ -21,12 +25,14 @@ struct Mint {
 	Mint operator / (Mint a) { return *this * a.inv(); }
 	bool operator == (Mint a) { return x == a.x; }
 	bool operator != (Mint a) { return x != a.x; }
+	friend ostream& operator<<(ostream& os, Mint n) {
+		return os << n.x;
+	}
 };
-// factorial + binomial component, use FLIM above your maximum! it is exclusive. don't forget to call prepare
-const int FLIM = 5005, MOD = (int)1e9 + 7;
-using mint_t = Mint<MOD>;
+using mint_t = Mint<md>;
+const int FLIM = 500005; // IMP: choose properly
 mint_t fac[FLIM], ifac[FLIM];
-void prepare() {
+void prepare() { // IMP: call prepare()
 	fac[0] = ifac[0] = mint_t(1);
 	for (int i = 1; i < FLIM; i++)
 		fac[i] = fac[i - 1] * mint_t(i);
