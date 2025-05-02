@@ -21,5 +21,7 @@ Also has memory and time optimizations in the 2D versions.
   - With 1D optimization, IOI13 Game: https://oj.uz/submission/1113071
   - SWERC21 (not necessary, but good benchmark): https://codeforces.com/contest/1662/submission/291669531
 
+- Range affine range sum: https://judge.yosupo.jp/submission/283019
+
 ### Source / Credit
 Own

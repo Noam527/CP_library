@@ -20,13 +20,14 @@ struct segtree {
 		lazy.resize(2 * n, tag());
 		t.resize(2 * n, element());
 	}
-	segtree(const vector<element> &a) {
+	template<typename T>
+	segtree(const vector<T> &a) {
 		n = max(2, (int)a.size());
 		while (n != (n & -n)) n += (n & -n);
 		lazy.resize(2 * n, tag());
 		t.resize(2 * n);
 		for (int i = 0; i < a.size(); i++)
-			t[i + n - 1] = a[i];
+			t[i + n - 1] = element(a[i]);
 		for (int i = n - 2; i >= 0; i--)
 			t[i] = t[2 * i + 1] * t[2 * i + 2];
 	}

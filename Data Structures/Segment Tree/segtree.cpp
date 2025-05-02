@@ -12,11 +12,12 @@ struct segtree {
 		n = max(2, sz);
 		t.resize(2 * n, element());
 	}
-	segtree(const vector<element> &a) {
+	template<typename T>
+	segtree(const vector<T> &a) {
 		n = max(2, (int)a.size());
 		t.resize(2 * n);
 		for (int i = 0; i < a.size(); i++)
-			t[i + n - 1] = a[i];
+			t[i + n - 1] = element(a[i]);
 		for (int i = n - 2; i >= 0; i--)
 			t[i] = t[2 * i + 1] * t[2 * i + 2];
 	}
