@@ -13,7 +13,7 @@ struct tag {
 
 struct emin {
 	itype v;
-	emin() : v(inf) {}
+	emin() : v(numeric_limits<itype>::max() / 2) {} // IMP: make sure this is sufficient
 	emin(itype v) : v(v) {}
 	emin operator * (const emin &other) const {
 		return emin(min(v, other.v));

@@ -14,7 +14,7 @@ struct tag {
 // NOTE: assuming mult >= 0
 struct emax {
 	itype v;
-	emax() : v(-inf) {}
+	emax() : v(numeric_limits<itype>::min() / 2) {} // IMP: make sure this is sufficient
 	emax(itype v) : v(v) {}
 	emax operator * (const emax &other) const {
 		return emax(max(v, other.v));
