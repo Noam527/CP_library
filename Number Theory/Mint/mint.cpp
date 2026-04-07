@@ -2,6 +2,7 @@
 const int md = 998244353;
 template<int MOD>
 struct Mint {
+	static_assert(MOD < (1 << 30), "MOD >= 2**30");
 	int x;
 	Mint() : x(0) {}
 	Mint(ll y) {
