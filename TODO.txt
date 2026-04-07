@@ -18,3 +18,4 @@
 - Polynomial Interpolation
 - Multipoint Evaluation
 - Fast Bigint (when not limited to short code)
+- Apply operation to segtree
