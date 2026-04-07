@@ -1,9 +1,10 @@
-// Assumes prime modulo at most 2^30.
-const int md = 998244353; // IMP: verify prime, maybe (int)1e9 + 7
+// Assumes 2 * MOD fits in signed integer
+const int md = 998244353;
 template<int MOD>
 struct Mint {
 	int x;
-	Mint(ll y = 0) {
+	Mint() : x(0) {}
+	Mint(ll y) {
 		if (0 <= y && y < MOD) x = y;
 		else {
 			x = y % MOD;
@@ -11,7 +12,7 @@ struct Mint {
 		}
 	}
 	Mint(int y, bool safe) {
-		safe;
+		(void)safe;
 		x = y;
 	}
 	Mint operator + (Mint a) const {
@@ -47,7 +48,20 @@ struct Mint {
 	void operator ^= (ll e) {
 		*this = *this ^ e;
 	}
-	Mint inv() const { return *this ^ (MOD - 2); }
+	static void euclid(int x, int y, int &a, int &b) {
+		if (y == 0) {
+			a = 1, b = 0;
+			return;
+		}
+		euclid(y, x % y, b, a);
+		b -= a * (x / y);
+	}
+	Mint inv() const {
+		Mint a, b;
+		euclid(MOD, x, a.x, b.x);
+		if (b.x < 0) b.x += MOD;
+		return b;
+	}
 	Mint operator / (Mint a) const { return *this * a.inv(); }
 	void operator /= (Mint a) {
 		*this *= a.inv();
@@ -56,6 +70,12 @@ struct Mint {
 	bool operator != (Mint a) const { return x != a.x; }
 	friend ostream& operator<<(ostream& os, Mint n) {
 		return os << n.x;
+	}
+	friend istream& operator>>(istream &is, Mint &n) {
+		ll x;
+		is >> x;
+		n = Mint(x);
+		return is;
 	}
 };
 using mint = Mint<md>;

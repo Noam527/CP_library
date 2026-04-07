@@ -11,5 +11,9 @@
   - LCA
   - distances
   - optimal centroid decomposition
-- Faster mint
-  - Also modulo nonprimes
+- Montgomery
+- Continued Fractions
+- Fractional Binary Search
+- Polynomial Interpolation
+- Multipoint Evaluation
+- Fast Bigint (when not limited to short code)
