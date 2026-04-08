@@ -1,30 +1,3 @@
-#include <bits/stdc++.h>
-using ll = long long;
-using ldb = long double;
-constexpr int OO = 1;
-const int intinf = (int)1e9 + 7;
-const ll inf = 2e18;
-using namespace std;
-
-template<typename T>
-istream& operator>>(istream& in, vector<T>& v) {
-    for (auto& x : v) in >> x;
-    return in;
-}
-
-#ifdef DEBUG
-#include "debug.h"
-#else
-#define PRINT_VARS(...) do { (void)sizeof(__VA_ARGS__); } while (0)
-#define PRINT_ARR(...) do { (void)sizeof(__VA_ARGS__); } while (0)
-#define PRINT_ARR_CNT(...) do { (void)sizeof(__VA_ARGS__); } while (0)
-#endif
-
-#ifdef COLOR
-#include "custom_cout.h"
-#endif
-
-/* --------------------- BEGIN REAL SOLUTION --------------------- */
 /*
 the struct 'element' must have:
 * neutral element (as default constructor)
@@ -32,7 +5,7 @@ the struct 'element' must have:
 */
 template<typename element>
 struct RMQ {
-	static const int B = 16;
+	static const int B = 32;
 	int n, h;
 	vector<element> val;
 	vector<element> pref, suf;
@@ -41,7 +14,7 @@ struct RMQ {
 	template<typename T>
 	RMQ(const vector<T> &a) {
 		n = (int)a.size();
-		h = 32 - __builtin_clz(n / B);
+		h = n >= B ? 32 - __builtin_clz(n / B) : 0;
 		val.resize(n);
 		pref.resize(n);
 		suf.resize(n);
@@ -75,8 +48,8 @@ struct RMQ {
 			return res;
 		}
 		element resl, resr;
-		while (l % B != 0) resl = resl * val[l++];
-		while (r % B != B - 1) resr = val[r--] * resr;
+		if (l % B != 0) resl = suf[l], l += B - l % B;
+		if (r % B != B - 1) resr = pref[r], r -= r % B + 1;
 		if (l > r) return resl * resr;
 		l /= B, r /= B;
 		int layer = 31 - __builtin_clz(r - l + 1);
