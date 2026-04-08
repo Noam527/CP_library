@@ -7,8 +7,6 @@
   - Suffix array
   - LCP
   - Z, KMP
-- Trees:
-  - optimal centroid decomposition
 - Montgomery
   - Find fast one, my mod is pretty good for now
 - Continued Fractions

@@ -12,6 +12,7 @@ Greedy labelling in dfs + clever way to build the parent relationships from it.
 
 ### Tests and Benchmarks
 - https://codeforces.com/contest/342/submission/370306705
+- https://cses.fi/problemset/result/16845580/
 
 ### Source / Credit
 Own
