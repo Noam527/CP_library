@@ -14,10 +14,10 @@ struct shallow_decomp {
 	static inline int flog2(int x) {
 		return x ? 31 - __builtin_clz(x) : -1;
 	}
-	int n, croot;
 	const vector<vector<int>> &g;
+	int n, croot;
 	vector<int> label, par;
-	shallow_decomp(const vector<vector<int>> &graph, int root = 0) : g(graph), n((int)g.size()) {
+	shallow_decomp(const vector<vector<int>> &graph, int root = 0) : g(graph), n((int)graph.size()) {
 		label.assign(n, -1);
 		par.assign(n, -1);
 		vector<vector<int>> stacks(flog2(n) + 1);
@@ -61,6 +61,6 @@ struct shallow_decomp {
 		}
 		label[v] = l;
 		stacks[l].push_back(v);
-		return seen & ~((1 << l) - 1) | (1 << l);
+		return (seen & ~((1 << l) - 1)) | (1 << l);
 	}
 };
