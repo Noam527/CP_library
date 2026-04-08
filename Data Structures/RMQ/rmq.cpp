@@ -38,7 +38,7 @@ struct RMQ {
 		}
 	}
 	// inclusive [l, r]
-	element query(int l, int r) {
+	element query(int l, int r) const {
 		if (l > r) return element();
 		if (l / B == r / B) {
 			element res = val[l];
