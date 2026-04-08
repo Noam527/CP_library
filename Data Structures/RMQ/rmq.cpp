@@ -5,7 +5,7 @@ the struct 'element' must have:
 */
 template<typename element>
 struct RMQ {
-	static const int B = 32;
+	static const int B = 16;
 	int n, h;
 	vector<element> val;
 	vector<element> pref, suf;
