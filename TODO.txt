@@ -8,8 +8,6 @@
   - LCP
   - Z, KMP
 - Trees:
-  - LCA
-  - distances
   - optimal centroid decomposition
 - Montgomery
   - Find fast one, my mod is pretty good for now
