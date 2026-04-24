@@ -15,8 +15,12 @@ struct rolling_hash {
 	rolling_hash(const string &s) {
 		int n = (int)s.size();
 		if (!initialized) {
-			for (int it = 0; it < N; it++) {
-				base[it] = rng() % MOD;
+			set<int> bases;
+			while ((int)bases.size() < N) {
+				int r = rng() % MOD;
+				if (bases.count(r)) continue;
+				base[bases.size()] = r;
+				bases.insert(r);
 			}
 			initialized = true;
 		}
