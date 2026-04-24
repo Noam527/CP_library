@@ -1,8 +1,7 @@
-using itype = ll;
 struct tag {
-	itype mult, add;
+	int mult, add;
 	tag() : mult(1), add(0) {}
-	tag(itype m, itype a) : mult(m), add(a) {}
+	tag(int m, int a) : mult(m), add(a) {}
 	bool empty() const {
 		return mult == 1 && add == 0;
 	}
@@ -11,10 +10,10 @@ struct tag {
 	}
 };
 struct esum {
-	itype v;
+	int v;
 	int l;
 	esum() : v(0), l(0) {}
-	esum(itype v, int l = 1) : v(v), l(l) {}
+	esum(int v, int l = 1) : v(v), l(l) {}
 	esum operator * (const esum &other) const {
 		return esum(v + other.v, l + other.l);
 	}

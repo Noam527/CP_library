@@ -1,8 +1,7 @@
-using itype = ll;
 struct tag {
-	itype mult, add;
+	ll mult, add;
 	tag() : mult(1), add(0) {}
-	tag(itype m, itype a) : mult(m), add(a) {}
+	tag(ll m, ll a) : mult(m), add(a) {}
 	bool empty() const {
 		return mult == 1 && add == 0;
 	}
@@ -13,9 +12,9 @@ struct tag {
 
 // NOTE: assuming mult >= 0
 struct emin {
-	itype v;
-	emin() : v(numeric_limits<itype>::max() / 2) {} // IMP: make sure this is sufficient
-	emin(itype v) : v(v) {}
+	ll v;
+	emin() : v(numeric_limits<ll>::max() / 2) {} // IMP: make sure this is sufficient
+	emin(ll v) : v(v) {}
 	emin operator * (const emin &other) const {
 		return emin(min(v, other.v));
 	}
