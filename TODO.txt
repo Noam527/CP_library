@@ -1,4 +1,4 @@
-- Rolling hash
+- Interval Container
 - Good treap
 - Plenty of ready segtrees
 - Proper polynomial operations
