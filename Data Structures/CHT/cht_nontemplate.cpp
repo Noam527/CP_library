@@ -43,7 +43,16 @@ struct CHT {
 	}
 	void insert(ll slope, ll constant, size_t id = -1) {
 		line n(type * slope, type * constant, false, id);
-		auto it = hull.insert(n).first;
+		auto tmp = hull.insert(n);
+		auto it = tmp.first;
+		if (!tmp.second) {
+			// exists of equal slope
+			if (n.c <= it->c) return; // indeed worse
+			// redo
+			hull.erase(it);
+			tmp = hull.insert(n);
+			it = tmp.first;
+		}
 		if (!is_ok(it)) {
 			hull.erase(it);
 			return;
@@ -71,11 +80,13 @@ struct CHT {
 		}
 	}
 	ll query(ll x) {
+		if (hull.empty()) return -inf * type;
 		line l = *hull.lower_bound(line(0, 0, true, 0, ldb(x)));
 		return type * (l.sl * x + l.c);
 	}
 	// id of the line instead of the evaluation, used for dp reconstruction.
 	size_t iquery(ll x) {
+		if (hull.empty()) return -inf * type;
 		return hull.lower_bound(line(0, 0, true, 0, ldb(x)))->id;
 	}
 };
