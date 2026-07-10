@@ -1,0 +1,190 @@
+namespace {
+	using ft = long double;
+
+	// T is the type of the coefficients
+	template<typename T>
+	struct real_poly {
+		using comp = complex<T>;
+		vector<T> p;
+		real_poly() {}
+		real_poly(size_t sz) : p(sz, T(0)) {}
+		real_poly(const vector<T> &values) : p(values) {}
+		real_poly(const real_poly &other) : p(other.p) {}
+		real_poly& operator = (const real_poly &other) {
+			p = other.p;
+			return *this;
+		}
+		// ************** BEGIN UTILITY **************
+		// Removes all zero leading coefficients
+		void truncate() {
+			if (p.size() == 0) return;
+			size_t ind = p.size() - 1;
+			while (ind > 0 && p[ind] == 0) ind--;
+			if (p[ind] != 0) {
+				p.resize(ind + 1);
+			}
+			else {
+				p.clear();
+			}
+		}
+		void resize(size_t newsize) {
+			p.resize(newsize, T(0));
+		}
+		size_t size() const {
+			return p.size();
+		}
+		int degree() const {
+			return (int)p.size() - 1;
+		}
+		inline T coeff(int k) const {
+			return p[k];
+		}
+		inline T operator [] (int k) const {
+			return coeff(k);
+		}
+		void pretty_print() const {
+			real_poly q(p);
+			q.truncate();
+			if (q.size() == 0) {
+				cout << "0" << endl;
+				return;
+			}
+			if (q.size() == 1) {
+				cout << q[0] << endl;
+				return;
+			}
+			// print most significant
+			if (abs(q[q.size() - 1]) != 1)
+				cout << q[q.size() - 1] << "x";
+			else if (q[q.size() - 1] > 0)
+				cout << "x";
+			else
+				cout << "-x";
+			if (q.size() > 2) {
+				cout << "^" << q.size() - 1;
+			}
+			for (int i = q.size() - 2; i >= 0; i--) {
+				if (q[i] == 0) continue;
+				if (q[i] > 0) cout << " + ";
+				else cout << " - ";
+
+				if (abs(q[i]) != 1 || i == 0) cout << abs(q[i]);
+				if (i > 0) {
+					cout << "x";
+					if (i > 1) {
+						cout << "^" << i;
+					}
+				}
+			}
+			cout << endl;
+		}
+		// *************** END UTILITY ***************
+
+		// ************** BEGIN BASIC OPS **************
+		T eval(T x) const {
+			T result(0);
+			for (int i = (int)p.size() - 1; i >= 0; i--)
+				result = result * x + p[i];
+			return result;
+		}
+		inline T operator () (T x) const {
+			return eval(x);
+		}
+		
+		void operator += (const real_poly &other) {
+			if (size() < other.size()) p.resize(other.size());
+			size_t iter = other.size();
+			for (size_t i = 0; i < iter; i++)
+				p[i] += other[i];
+		}
+		real_poly operator + (const real_poly &other) {
+			real_poly result(max(size(), other.size()));
+			for (size_t i = 0; i < p.size(); i++) {
+				result[i] += p[i];
+			}
+			for (size_t i = 0; i < other.size(); i++) {
+				result[i] += other[i];
+			}
+			return result;
+		}
+		void operator -= (const real_poly &other) {
+			if (size() < other.size()) p.resize(other.size());
+			size_t iter = other.size();
+			for (size_t i = 0; i < iter; i++)
+				p[i] -= other[i];
+		}
+		real_poly operator - (const real_poly &other) {
+			real_poly result(max(size(), other.size()));
+			for (size_t i = 0; i < p.size(); i++) {
+				result[i] -= p[i];
+			}
+			for (size_t i = 0; i < other.size(); i++) {
+				result[i] -= other[i];
+			}
+			return result;
+		}
+		// *************** END BASIC OPS ***************
+
+		// ************** BEGIN ADV. OPS **************
+		static void fft(vector<comp> &a) {
+			if (a.size() == 0) return;
+			size_t n = a.size(), L = 31 - __builtin_clz(n);
+			// fix if p's size is not a power of 2
+			while (n != (n & -n)) n += n & -n;
+			if (a.size() < n) a.resize(n);
+
+			static vector<comp> R(2, 1);
+			static vector<comp> rt(2, 1);
+			for (static size_t k = 2; k < n; k *= 2) {
+				R.resize(n); rt.resize(n);
+				auto x = polar(1.0L, acos(-1.0L) / k);
+				for (size_t i = k; i < 2 * k; i++) rt[i] = R[i] = i & 1 ? R[i / 2] * x : R[i / 2];
+			}
+			vector<size_t> rev(n);
+			for (size_t i = 0; i < n; i++) rev[i] = (rev[i / 2] | (i & 1) << L) / 2;
+			for (size_t i = 0; i < n; i++) if (i < rev[i]) swap(a[i], a[rev[i]]);
+			// now to really do the fft (and some illegal shit to skip std::complex)
+			for (size_t k = 1; k < n; k *= 2)
+				for (size_t i = 0; i < n; i += 2 * k) for (size_t j = 0; j < k; j++) {
+					// comp z = rt[j+k] * a[i+j+k]; // (25% faster if hand-rolled)  /// include-line
+					auto x = (T *)&rt[j + k], y = (T *)&a[i + j + k];        /// exclude-line
+					comp z(x[0] * y[0] - x[1] * y[1], x[0] * y[1] + x[1] * y[0]);           /// exclude-line
+					a[i + j + k] = a[i + j] - z;
+					a[i + j] += z;
+				}
+		}
+		real_poly operator * (const real_poly &other) const {
+			if (size() == 0 || other.size() == 0) return real_poly();
+			vector<T> result(size() + other.size() - 1);
+			int L = 32 - __builtin_clz(result.size()), n = 1 << L;
+			vector<comp> in(n), out(n);
+			copy(p.begin(), p.end(), begin(in));
+			for (int i = 0; i < (int)other.size(); i++) in[i].imag(other[i]);
+			fft(in);
+			for (comp &x : in) x *= x;
+			for (int i = 0; i < n; i++) out[i] = in[-i & (n - 1)] - conj(in[i]);
+			fft(out);
+			for (int i = 0; i < (int)result.size(); i++) result[i] = imag(out[i]) / (4 * n);
+			return result;
+		}
+		void operator *= (const real_poly &other) {
+			if (size() == 0 || other.size() == 0) {
+				p.clear();
+				return;
+			}
+			size_t newsize = size() + other.size() - 1;
+			size_t L = 32 - __builtin_clz(newsize), n = 1 << L;
+			vector<comp> in(n), out(n);
+			copy(p.begin(), p.end(), begin(in));
+			resize(newsize);
+			for (size_t i = 0; i < other.size(); i++) in[i].imag(other[i]);
+			fft(in);
+			for (comp &x : in) x *= x;
+			for (size_t i = 0; i < n; i++) out[i] = in[-i & (n - 1)] - conj(in[i]);
+			fft(out);
+			for (size_t i = 0; i < newsize; i++) p[i] = imag(out[i]) / (4 * n);
+		}
+		// *************** END ADV. OPS ***************
+	};
+	using rpoly = real_poly<ft>;
+};
