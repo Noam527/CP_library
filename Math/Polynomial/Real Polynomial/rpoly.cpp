@@ -1,5 +1,9 @@
 namespace {
 	using ft = long double;
+	const ft EPS = 1e-12;
+	bool almost_eq(ft x, ft y) {
+		return abs(x - y) < EPS;
+	}
 
 	// T is the type of the coefficients
 	template<typename T>
@@ -7,7 +11,7 @@ namespace {
 		using comp = complex<T>;
 		vector<T> p;
 		real_poly() {}
-		real_poly(size_t sz) : p(sz, T(0)) {}
+		real_poly(size_t sz, T values = T(0)) : p(sz, values) {}
 		real_poly(const vector<T> &values) : p(values) {}
 		real_poly(const real_poly &other) : p(other.p) {}
 		real_poly& operator = (const real_poly &other) {
@@ -43,19 +47,31 @@ namespace {
 			return coeff(k);
 		}
 		void pretty_print() const {
+			auto output_val = [](T x) {
+				ll y = roundl(x);
+				if (almost_eq(x, T(y))) {
+					cout << y;
+				}
+				else {
+					cout << x;
+				}
+			};
 			real_poly q(p);
-			q.truncate();
+			while (q.size() > 0 && almost_eq(q.p.back(), 0)) q.p.pop_back();
 			if (q.size() == 0) {
 				cout << "0" << endl;
 				return;
 			}
 			if (q.size() == 1) {
-				cout << q[0] << endl;
+				output_val(q[0]);
+				cout << endl;
 				return;
 			}
 			// print most significant
-			if (abs(q[q.size() - 1]) != 1)
-				cout << q[q.size() - 1] << "x";
+			if (!almost_eq(q[q.size() - 1], 1) && !almost_eq(q[q.size() - 1], -1)) {
+				output_val(q[q.size() - 1]);
+				cout << "x";
+			}
 			else if (q[q.size() - 1] > 0)
 				cout << "x";
 			else
@@ -64,11 +80,11 @@ namespace {
 				cout << "^" << q.size() - 1;
 			}
 			for (int i = q.size() - 2; i >= 0; i--) {
-				if (q[i] == 0) continue;
+				if (almost_eq(q[i], 0)) continue;
 				if (q[i] > 0) cout << " + ";
 				else cout << " - ";
 
-				if (abs(q[i]) != 1 || i == 0) cout << abs(q[i]);
+				if (!almost_eq(abs(q[i]), 1) || i == 0) output_val(abs(q[i]));
 				if (i > 0) {
 					cout << "x";
 					if (i > 1) {
@@ -122,6 +138,21 @@ namespace {
 				result[i] -= other[i];
 			}
 			return result;
+		}
+		real_poly derivative() const {
+			if (p.size() <= 1) return real_poly();
+			real_poly Q(p.size() - 1);
+			for (size_t i = 0; i < Q.size(); i++)
+				Q[i] = T(i + 1) * p[i + 1];
+			return Q;
+		}
+		// with the free coefficient being 0
+		real_poly integral() const {
+			if (p.size() == 0) return real_poly();
+			real_poly Q(p.size() + 1);
+			for (size_t i = 1; i < Q.size(); i++)
+				Q[i] = p[i - 1] / T(i);
+			return Q;
 		}
 		// *************** END BASIC OPS ***************
 
@@ -183,6 +214,23 @@ namespace {
 			for (size_t i = 0; i < n; i++) out[i] = in[-i & (n - 1)] - conj(in[i]);
 			fft(out);
 			for (size_t i = 0; i < newsize; i++) p[i] = imag(out[i]) / (4 * n);
+		}
+		// Polynomial inverse, but only the first n coefficients (upto x^{n-1})
+		real_poly inv(size_t n) const {
+			if (p.size() == 0 || p[0] == 0) {
+				throw std::runtime_error("Cannot inverse a polynomial with 0 as the free coefficient.");
+			}
+			real_poly B(1, T(1) / p[0]);
+			// now inverse modulo x^1, we want inverse modulo x^n
+			for (size_t k = 1; k < n; k *= 2) {
+				// newB = B(2 - pB) (mod x^2k)
+				real_poly rhs(1, 2);
+				rhs -= *this * B;
+				B *= rhs;
+				B.resize(2 * k);
+			}
+			B.resize(n);
+			return B;
 		}
 		// *************** END ADV. OPS ***************
 	};
