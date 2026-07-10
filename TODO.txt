@@ -15,3 +15,8 @@
 - Multipoint Evaluation
 - Fast Bigint (when not limited to short code)
 - Apply operation to segtree
+- Geometry
+  - Convex hull
+- Online FFT
+- Generic Binary Search
+- Timer
