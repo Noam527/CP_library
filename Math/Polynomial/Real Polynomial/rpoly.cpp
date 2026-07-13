@@ -224,8 +224,12 @@ namespace {
 			// now inverse modulo x^1, we want inverse modulo x^n
 			for (size_t k = 1; k < n; k *= 2) {
 				// newB = B(2 - pB) (mod x^2k)
+				// but first truncate p
+				real_poly truncated_p(min(2 * k, size()));
+				for (size_t i = 0; i < truncated_p.p.size(); i++)
+					truncated_p.p[i] = p[i];
 				real_poly rhs(1, 2);
-				rhs -= *this * B;
+				rhs -= truncated_p * B;
 				B *= rhs;
 				B.resize(2 * k);
 			}
