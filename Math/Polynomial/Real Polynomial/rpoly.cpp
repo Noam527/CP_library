@@ -113,13 +113,13 @@ namespace {
 			for (size_t i = 0; i < iter; i++)
 				p[i] += other[i];
 		}
-		real_poly operator + (const real_poly &other) {
+		real_poly operator + (const real_poly &other) const {
 			real_poly result(max(size(), other.size()));
 			for (size_t i = 0; i < p.size(); i++) {
-				result[i] += p[i];
+				result.p[i] += p[i];
 			}
 			for (size_t i = 0; i < other.size(); i++) {
-				result[i] += other[i];
+				result.p[i] += other[i];
 			}
 			return result;
 		}
@@ -129,13 +129,13 @@ namespace {
 			for (size_t i = 0; i < iter; i++)
 				p[i] -= other[i];
 		}
-		real_poly operator - (const real_poly &other) {
+		real_poly operator - (const real_poly &other) const {
 			real_poly result(max(size(), other.size()));
 			for (size_t i = 0; i < p.size(); i++) {
-				result[i] -= p[i];
+				result.p[i] = p[i];
 			}
 			for (size_t i = 0; i < other.size(); i++) {
-				result[i] -= other[i];
+				result.p[i] -= other[i];
 			}
 			return result;
 		}

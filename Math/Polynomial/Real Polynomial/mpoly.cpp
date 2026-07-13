@@ -1,3 +1,31 @@
+#include <bits/stdc++.h>
+using ll = long long;
+using ldb = long double;
+constexpr int OO = 1;
+const int intinf = (int)1e9 + 7;
+const ll inf = 2e18;
+using namespace std;
+
+template<typename T>
+istream& operator>>(istream& in, vector<T>& v) {
+    for (auto& x : v) in >> x;
+    return in;
+}
+
+#ifdef DEBUG
+#include "debug.h"
+#else
+#define PRINT_VARS(...) do { (void)sizeof(__VA_ARGS__); } while (0)
+#define PRINT_ARR(...) do { (void)sizeof(__VA_ARGS__); } while (0)
+#define PRINT_ARR_CNT(...) do { (void)sizeof(__VA_ARGS__); } while (0)
+#endif
+
+#ifdef COLOR
+#include "custom_cout.h"
+#endif
+
+/* --------------------- BEGIN REAL SOLUTION --------------------- */
+
 // Assumes 2 * MOD fits in signed integer
 const int md = 998244353;
 template<int MOD>
@@ -15,6 +43,10 @@ struct Mint {
 	Mint(int y, bool safe) {
 		(void)safe;
 		x = y;
+	}
+	Mint operator - () const {
+		if (x == 0) return Mint(0, true);
+		return Mint(MOD - x, true);
 	}
 	Mint operator + (Mint a) const {
 		if (x + a.x < MOD)
@@ -181,13 +213,13 @@ namespace {
 			for (size_t i = 0; i < iter; i++)
 				p[i] += other[i];
 		}
-		mint_poly operator + (const mint_poly &other) {
+		mint_poly operator + (const mint_poly &other) const {
 			mint_poly result(max(size(), other.size()));
 			for (size_t i = 0; i < p.size(); i++) {
-				result[i] += p[i];
+				result.p[i] = p[i];
 			}
 			for (size_t i = 0; i < other.size(); i++) {
-				result[i] += other[i];
+				result.p[i] += other[i];
 			}
 			return result;
 		}
@@ -197,13 +229,13 @@ namespace {
 			for (size_t i = 0; i < iter; i++)
 				p[i] -= other[i];
 		}
-		mint_poly operator - (const mint_poly &other) {
+		mint_poly operator - (const mint_poly &other) const {
 			mint_poly result(max(size(), other.size()));
 			for (size_t i = 0; i < p.size(); i++) {
-				result[i] -= p[i];
+				result.p[i] = p[i];
 			}
 			for (size_t i = 0; i < other.size(); i++) {
-				result[i] -= other[i];
+				result.p[i] -= other[i];
 			}
 			return result;
 		}
@@ -297,7 +329,113 @@ namespace {
 			B.resize(n);
 			return B;
 		}
+		// returns (D, R) such that A = BD + R, and deg(R) < deg(B)
+		static array<mint_poly, 2> divmod(const mint_poly &A, const mint_poly &B) {
+			size_t n = A.size(), m = B.size();
+			if (n < m) return {mint_poly(), A};
+			if (m == 1) {
+				mint_poly D(n);
+				for (size_t i = 0; i < n; i++) {
+					D.p[i] = A.p[i] / B[0];
+				}
+				return {D, mint_poly()};
+			}
+			// D is of degree n - m
+			// DR = AR * inv(BR) (first n - m + 1 terms)
+			mint_poly AR(n - m + 1), BR(n - m + 1);
+			for (size_t i = 0; i <= n - m; i++) {
+				AR.p[i] = A.p[A.size() - 1 - i];
+				if (B.size() - 1 >= i)
+					BR.p[i] = B.p[B.size() - 1 - i];
+			}
+			mint_poly D = AR * BR.inv(n - m + 1);
+			D.resize(n - m + 1);
+			reverse(D.p.begin(), D.p.end());
+			mint_poly tmp = B * D;
+			mint_poly R = A - tmp;
+			R.truncate();
+			return {D, R};
+		}
+		mint_poly operator / (const mint_poly &other) const {
+			return divmod(*this, other)[0];
+		}
+		void operator /= (const mint_poly &other) {
+			mint_poly tmp = divmod(*this, other)[0];
+			p = tmp.p;
+		}
+		mint_poly operator % (const mint_poly &other) const {
+			return divmod(*this, other)[1];
+		}
+		void operator %= (const mint_poly &other) {
+			mint_poly tmp = divmod(*this, other)[1];
+			p = tmp.p;
+		}
+
+		static mint_poly build_tree(vector<mint_poly> &res, int node, typename vector<T>::iterator beg, typename vector<T>::iterator end) {
+			if (end - beg == 1) {
+				vector<T> tmp = {-*beg, 1};
+				return res[node] = mint_poly(tmp); // x - *beg
+			}
+			auto mid = beg + (end - beg) / 2;
+			return res[node] = build_tree(res, 2 * node, beg, mid) * build_tree(res, 2 * node + 1, mid, end);
+		}
+		vector<T> evaluate_rec(const vector<mint_poly> &tree, int node, int l, int r) {
+			if (r - l == 1) {
+				if (p.size() == 0) return {T(0)};
+				return {p[0]};
+			}
+			int m = l + (r - l) / 2;
+			vector<T> first_half = (*this % tree[2 * node]).evaluate_rec(tree, 2 * node, l, m);
+			vector<T> second_half = (*this % tree[2 * node + 1]).evaluate_rec(tree, 2 * node + 1, m, r);
+			first_half.insert(first_half.end(), second_half.begin(), second_half.end());
+			return first_half;
+		}
+		vector<T> evaluate(vector<T> x) {
+			size_t n = x.size();
+			if (p.size() == 0) {
+				return vector<T>(n, 0);
+			}
+			vector<mint_poly> tree(4 * n);
+			build_tree(tree, 1, x.begin(), x.end());
+			mint_poly newp = *this % tree[1];
+			return newp.evaluate_rec(tree, 1, 0, (int)n);
+		}
 		// *************** END ADV. OPS ***************
 	};
 	using mpoly = mint_poly<mint>;
 };
+
+void solve() {
+	int n, m;
+	cin >> n >> m;
+	vector<mint> a(n);
+	cin >> a;
+	mpoly P(a);
+	vector<mint> x(m);
+	cin >> x;
+
+	vector<mint> res = P.evaluate(x);
+	for (auto &i : res) cout << i << " ";
+	cout << endl;
+}
+
+/* --------------------- BEGIN MAIN SETUP --------------------- */
+
+int main() {
+	ios::sync_with_stdio(0), cin.tie(0);
+	// multitest?
+	int tests = 1;
+	// cin >> tests;
+	// for floating point problems
+	cout.precision(10), cout << fixed;
+#ifdef COLOR
+	colored_cout.init(cout);
+	for (int testnum = 0; testnum < tests; testnum++) {
+		hook_before_test(testnum);
+		solve();
+		hook_after_test(testnum);
+	}
+#else
+	while (tests--) solve();
+#endif
+}
