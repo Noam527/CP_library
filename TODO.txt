@@ -7,6 +7,7 @@
   - Suffix array
   - LCP
   - Z, KMP
+  - Pattern search with question marks
 - Montgomery
   - Find fast one, my mod is pretty good for now
 - Continued Fractions
