@@ -16,5 +16,4 @@
 - Geometry
   - Convex hull
 - Online FFT
-- Generic Binary Search
 - Timer
