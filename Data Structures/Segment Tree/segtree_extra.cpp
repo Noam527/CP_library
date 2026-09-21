@@ -23,9 +23,10 @@ struct segtree {
 		for (int i = n - 2; i >= 0; i--)
 			t[i] = t[2 * i + 1] * t[2 * i + 2];
 	}
-	void update(int pos, element val) {
+	void update(int pos, element val, bool apply = false) {
 		pos += n - 1;
-		t[pos] = val;
+		if (apply) t[pos] = t[pos] * val;
+		else t[pos] = val;
 		while (pos) {
 			pos = (pos - 1) / 2;
 			t[pos] = t[2 * pos + 1] * t[2 * pos + 2];
