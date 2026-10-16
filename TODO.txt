@@ -1,4 +1,3 @@
-- Interval Container
 - Good treap
 - Powerful string library:
   - Suffix tree explained
