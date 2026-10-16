@@ -122,6 +122,16 @@ namespace {
 		mint_poly() {}
 		mint_poly(size_t sz, T values = T(0)) : p(sz, values) {}
 		mint_poly(const vector<T> &values) : p(values) {}
+		mint_poly(const vector<T> &values, int l, int r) {
+			if (l > r) {
+				p.assign(1, 0);
+				return;
+			}
+			p.resize(r - l + 1);
+			for (int i = l; i <= r; i++) {
+				p[i - l] = values[i];
+			}
+		}
 		mint_poly(const mint_poly &other) : p(other.p) {}
 		mint_poly& operator = (const mint_poly &other) {
 			p = other.p;
@@ -399,6 +409,42 @@ namespace {
 			build_tree(tree, 1, x.begin(), x.end());
 			mint_poly newp = *this % tree[1];
 			return newp.evaluate_rec(tree, 1, 0, (int)n);
+		}
+		template<class F>
+		static void online_conv_dc(vector<T> &A, vector<T> &B, vector<T> &C, int l, int r, const F &updateA, const F &updateB) {
+			if (l == r) {
+				C[l] += A[0] * B[l] + A[l] * B[0];
+				updateA(A, C, l);
+				updateB(B, C, l);
+				return;
+			}
+			int mid = (l + r) / 2;
+			online_conv_dc(A, B, C, l, mid, updateA, updateB);
+			// take contribution
+			mint_poly Al(A, 0, min(r - l, mid));
+			mint_poly Br(B, l, mid);
+			// prevent overcounting
+			int lbound = 1 + min(r - l, mid);
+			int start = max(l, lbound);
+			mint_poly Ar(A, start, mid);
+			mint_poly Bl(B, 0, min(r - start, mid));
+			mint_poly C1 = Al * Br, C2 = Ar * Bl;
+			// add l to their degrees
+			for (int i = mid + 1; i <= r; i++) {
+				if (i - l < (int)C1.size()) C[i] += C1[i - l];
+				if (i - start >= 0 && i - start < (int)C2.size()) C[i] += C2[i - start];
+			}
+			online_conv_dc(A, B, C, mid + 1, r, updateA, updateB);
+		}
+		// get c_0, ..., c_{n-1}. Once c_k is computed, we get a_{k+1} and b_{k+1}
+		// updateA takes in A, C, and the newly calculated coefficient in C.
+		// updateB does the same with B.
+		template<class F>
+		static mint_poly online_convolution(T a0, T b0, int n, const F &updateA, const F &updateB) {
+			vector<T> A(n), B(n), C(n);
+			A[0] = a0, B[0] = b0;
+			online_conv_dc(A, B, C, 0, n - 1, updateA, updateB);
+			return mint_poly(C);
 		}
 		// *************** END ADV. OPS ***************
 	};

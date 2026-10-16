@@ -13,6 +13,16 @@ namespace {
 		real_poly() {}
 		real_poly(size_t sz, T values = T(0)) : p(sz, values) {}
 		real_poly(const vector<T> &values) : p(values) {}
+		real_poly(const vector<T> &values, int l, int r) {
+			if (l > r) {
+				p.assign(1, 0);
+				return;
+			}
+			p.resize(r - l + 1);
+			for (int i = l; i <= r; i++) {
+				p[i - l] = values[i];
+			}
+		}
 		real_poly(const real_poly &other) : p(other.p) {}
 		real_poly& operator = (const real_poly &other) {
 			p = other.p;
@@ -235,6 +245,42 @@ namespace {
 			}
 			B.resize(n);
 			return B;
+		}
+		template<class F>
+		static void online_conv_dc(vector<T> &A, vector<T> &B, vector<T> &C, int l, int r, const F &updateA, const F &updateB) {
+			if (l == r) {
+				C[l] += A[0] * B[l] + A[l] * B[0];
+				updateA(A, C, l);
+				updateB(B, C, l);
+				return;
+			}
+			int mid = (l + r) / 2;
+			online_conv_dc(A, B, C, l, mid, updateA, updateB);
+			// take contribution
+			real_poly Al(A, 0, min(r - l, mid));
+			real_poly Br(B, l, mid);
+			// prevent overcounting
+			int lbound = 1 + min(r - l, mid);
+			int start = max(l, lbound);
+			real_poly Ar(A, start, mid);
+			real_poly Bl(B, 0, min(r - start, mid));
+			real_poly C1 = Al * Br, C2 = Ar * Bl;
+			// add l to their degrees
+			for (int i = mid + 1; i <= r; i++) {
+				if (i - l < (int)C1.size()) C[i] += C1[i - l];
+				if (i - start >= 0 && i - start < (int)C2.size()) C[i] += C2[i - start];
+			}
+			online_conv_dc(A, B, C, mid + 1, r, updateA, updateB);
+		}
+		// get c_0, ..., c_{n-1}. Once c_k is computed, we get a_{k+1} and b_{k+1}
+		// updateA takes in A, C, and the newly calculated coefficient in C.
+		// updateB does the same with B.
+		template<class F>
+		static real_poly online_convolution(T a0, T b0, int n, const F &updateA, const F &updateB) {
+			vector<T> A(n), B(n), C(n);
+			A[0] = a0, B[0] = b0;
+			online_conv_dc(A, B, C, 0, n - 1, updateA, updateB);
+			return real_poly(C);
 		}
 		// *************** END ADV. OPS ***************
 	};
