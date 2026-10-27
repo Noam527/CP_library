@@ -153,7 +153,7 @@ namespace {
 			if (p.size() <= 1) return real_poly();
 			real_poly Q(p.size() - 1);
 			for (size_t i = 0; i < Q.size(); i++)
-				Q[i] = T(i + 1) * p[i + 1];
+				Q.p[i] = T(i + 1) * p[i + 1];
 			return Q;
 		}
 		// with the free coefficient being 0
@@ -161,7 +161,7 @@ namespace {
 			if (p.size() == 0) return real_poly();
 			real_poly Q(p.size() + 1);
 			for (size_t i = 1; i < Q.size(); i++)
-				Q[i] = p[i - 1] / T(i);
+				Q.p[i] = p[i - 1] / T(i);
 			return Q;
 		}
 		// *************** END BASIC OPS ***************

@@ -31,7 +31,7 @@ struct Comp {
 		x = tmp;
 	}
 	Comp operator * (const Comp &other) const {
-		return Comp(x + other.x - y * other.y, x * other.y + y * other.x);
+		return Comp(x * other.x - y * other.y, x * other.y + y * other.x);
 	}
 	void operator /= (const Comp &other) {
 		Comp other_conj = other.conj();
